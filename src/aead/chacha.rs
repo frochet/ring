@@ -67,6 +67,17 @@ impl Key {
         out
     }
 
+    #[inline]
+    pub fn new_mask_13(&self, sample: Sample) -> [u8; 13] {
+        let mut out: [u8; 13] = [0; 13];
+        let iv = Iv::assume_unique_for_key(sample);
+
+        debug_assert!(out.len() <= BLOCK_LEN);
+        self.encrypt_in_place(iv.into_counter_for_single_block_less_safe(), &mut out);
+
+        out
+    }
+
     /// Analogous to `slice::copy_within()`.
     #[inline(always)]
     pub fn encrypt_within(&self, counter: Counter, in_out: &mut [u8], src: RangeFrom<usize>) {

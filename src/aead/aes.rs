@@ -103,6 +103,13 @@ impl Key {
         let [b0, b1, b2, b3, b4, ..] = self.encrypt_block(sample);
         [b0, b1, b2, b3, b4]
     }
+
+    pub fn new_mask_13(&self, sample: Sample) -> [u8; 13] {
+        let [b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, ..] =
+            self.encrypt_block(sample);
+        [b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12]
+    }
+
 }
 
 pub const AES_128_KEY_LEN: usize = 128 / 8;
