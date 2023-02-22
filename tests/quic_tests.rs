@@ -67,4 +67,17 @@ fn test_sample_len(alg: &'static quic::Algorithm) {
 
     // Sample is empty.
     assert!(key.new_mask(&[]).is_err());
+
+    // Sample is the right size.
+    assert!(key.new_mask_9(&sample_data[..sample_len]).is_ok());
+
+    // Sample is one byte too small.
+    assert!(key.new_mask_9(&sample_data[..(sample_len - 1)]).is_err());
+
+    // Sample is one byte too big.
+    assert!(key.new_mask_9(&sample_data[..(sample_len + 1)]).is_err());
+
+    // Sample is empty.
+    assert!(key.new_mask_9(&[]).is_err());
+
 }

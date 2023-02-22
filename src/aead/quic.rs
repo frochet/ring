@@ -68,6 +68,16 @@ impl HeaderProtectionKey {
         Ok(out)
     }
 
+    /// Generate a new QUIC Header Protection mask for QUIC V3
+    ///
+    /// `sample` must be exactly `self.algorithm().sample_len()` bytes long.
+    pub fn new_mask_9(&self, sample: &[u8]) -> Result<[u8; 9], error::Unspecified> {
+        let sample = <&[u8; SAMPLE_LEN]>::try_from(sample)?;
+
+        let out = (self.algorithm.new_mask_9)(&self.inner, *sample);
+        Ok(out)
+    }
+
     /// The key's algorithm.
     #[inline(always)]
     pub fn algorithm(&self) -> &'static Algorithm {
@@ -85,6 +95,8 @@ pub struct Algorithm {
     init: fn(key: &[u8], cpu_features: cpu::Features) -> Result<KeyInner, error::Unspecified>,
 
     new_mask: fn(key: &KeyInner, sample: Sample) -> [u8; 5],
+
+    new_mask_9: fn(key: &KeyInner, sample:Sample) -> [u8; 9],
 
     key_len: usize,
     id: AlgorithmID,
@@ -133,6 +145,7 @@ pub static AES_128: Algorithm = Algorithm {
     key_len: 16,
     init: aes_init_128,
     new_mask: aes_new_mask,
+    new_mask_9: aes_new_mask_9,
     id: AlgorithmID::AES_128,
 };
 
@@ -141,6 +154,7 @@ pub static AES_256: Algorithm = Algorithm {
     key_len: 32,
     init: aes_init_256,
     new_mask: aes_new_mask,
+    new_mask_9: aes_new_mask_9,
     id: AlgorithmID::AES_256,
 };
 
@@ -163,11 +177,21 @@ fn aes_new_mask(key: &KeyInner, sample: Sample) -> [u8; 5] {
     aes_key.new_mask(sample)
 }
 
+fn aes_new_mask_9(key: &KeyInner, sample: Sample) -> [u8; 9] {
+    let aes_key = match key {
+        KeyInner::Aes(key) => key,
+        _ => unreachable!(),
+    };
+
+    aes_key.new_mask_9(sample)
+}
+
 /// ChaCha20.
 pub static CHACHA20: Algorithm = Algorithm {
     key_len: chacha::KEY_LEN,
     init: chacha20_init,
     new_mask: chacha20_new_mask,
+    new_mask_9: chacha20_new_mask_9,
     id: AlgorithmID::CHACHA20,
 };
 
@@ -183,4 +207,13 @@ fn chacha20_new_mask(key: &KeyInner, sample: Sample) -> [u8; 5] {
     };
 
     chacha20_key.new_mask(sample)
+}
+
+fn chacha20_new_mask_9(key: &KeyInner, sample: Sample) -> [u8; 9] {
+    let chacha20_key = match key {
+        KeyInner::ChaCha20(key) => key,
+        _ => unreachable!(),
+    };
+
+    chacha20_key.new_mask_9(sample)
 }

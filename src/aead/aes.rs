@@ -300,6 +300,14 @@ impl Key {
         out
     }
 
+    pub fn new_mask_9(&self, sample: Sample) -> [u8; 9] {
+        let block = self.encrypt_block(Block::from(&sample));
+
+        let mut out: [u8; 9] = [0; 9];
+        out.copy_from_slice(&block.as_ref()[..9]);
+
+        out
+    }
     // TODO: use `matches!` when MSRV increases to 1.42.0 and remove this
     // `#[allow(...)]`
     #[allow(clippy::unknown_clippy_lints)]

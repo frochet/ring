@@ -68,6 +68,25 @@ impl Key {
         out
     }
 
+    #[inline]
+    pub fn new_mask_9(&self, sample: Sample) -> [u8; 9] {
+        let mut out: [u8; 9] = [0; 9];
+        let iv = Iv::assume_unique_for_key(sample);
+
+        debug_assert!(out.len() <= BLOCK_LEN);
+
+        unsafe {
+            self.encrypt(
+                CounterOrIv::Iv(iv),
+                out.as_ptr(),
+                out.len(),
+                out.as_mut_ptr(),
+            );
+        }
+
+        out
+    }
+
     pub fn encrypt_overlapping(&self, counter: Counter, in_out: &mut [u8], in_prefix_len: usize) {
         // XXX: The x86 and at least one branch of the ARM assembly language
         // code doesn't allow overlapping input and output unless they are
