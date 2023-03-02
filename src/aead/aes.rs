@@ -300,10 +300,10 @@ impl Key {
         out
     }
 
-    pub fn new_mask_9(&self, sample: Sample) -> [u8; 9] {
+    pub fn new_mask_13(&self, sample: Sample) -> [u8; 13] {
         let block = self.encrypt_block(Block::from(&sample));
 
-        let mut out: [u8; 9] = [0; 9];
+        let mut out: [u8; 13] = [0; 13];
         out.copy_from_slice(&block.as_ref()[..9]);
 
         out

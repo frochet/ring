@@ -69,8 +69,8 @@ impl Key {
     }
 
     #[inline]
-    pub fn new_mask_9(&self, sample: Sample) -> [u8; 9] {
-        let mut out: [u8; 9] = [0; 9];
+    pub fn new_mask_13(&self, sample: Sample) -> [u8; 13] {
+        let mut out: [u8; 13] = [0; 13];
         let iv = Iv::assume_unique_for_key(sample);
 
         debug_assert!(out.len() <= BLOCK_LEN);
