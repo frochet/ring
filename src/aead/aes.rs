@@ -304,7 +304,7 @@ impl Key {
         let block = self.encrypt_block(Block::from(&sample));
 
         let mut out: [u8; 13] = [0; 13];
-        out.copy_from_slice(&block.as_ref()[..9]);
+        out.copy_from_slice(&block.as_ref()[..13]);
 
         out
     }
